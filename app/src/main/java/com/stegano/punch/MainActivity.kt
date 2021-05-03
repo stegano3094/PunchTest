@@ -1,5 +1,6 @@
 package com.stegano.punch
 
+import android.animation.*
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -91,6 +92,16 @@ class MainActivity : AppCompatActivity() {
                 // 애니메이션이 반복 중일 때
             }
         })
+
+        // 속성 애니메이션을 불러옴
+        AnimatorInflater.loadAnimator(this@MainActivity, R.animator.property_animation).apply {
+            val colorAnimator = this@apply as? ObjectAnimator
+            colorAnimator?.apply {
+                setEvaluator(ArgbEvaluator())  // 속성 애니메이션의 타겟을 지정함
+                target = window.decorView.findViewById(R.id.content)
+                start()  // 애니메이션 시작
+            }
+        }
     }
 
     fun punchPowerTestComplete(power: Double) {
