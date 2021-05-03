@@ -9,6 +9,8 @@ import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.pow
 
@@ -30,11 +32,13 @@ class MainActivity : AppCompatActivity() {
                         event.values[1].toDouble().pow(2.0) +
                         event.values[2].toDouble().pow(2.0)
 
-                if(power > 20 && !isStart) {
+                if(power > 500 && !isStart) {
                     startTime = System.currentTimeMillis()
                     isStart = true
                 }
                 if(isStart) {
+                    imageView.clearAnimation()  // 측정이 시작되면 애니메이션 제거
+                    stateLabel.text = "3초간 측정 중입니다."
                     if(maxPower < power) {
                         maxPower = power
                     }
@@ -67,9 +71,26 @@ class MainActivity : AppCompatActivity() {
         stateLabel.text = "핸드폰을 손에 쥐고 주먹을 내지르세요."
         sensorManager.registerListener(
                 eventListener,
+                // 중력을 제외한 x,y,z축의 가속도를 측정, Sensor.TYPE_AMBIENT_TEMPERATURE 등 다양하게 바꿈으로써 센서타입 변경 가능
                 sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
                 SensorManager.SENSOR_DELAY_NORMAL
         )
+
+        val animation = AnimationUtils.loadAnimation(this@MainActivity, R.anim.tran)
+        imageView.startAnimation(animation)
+        animation.setAnimationListener(object: Animation.AnimationListener{
+            override fun onAnimationStart(animation: Animation?) {
+                // 애니메이션이 시작될 때
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                // 애니메이션이 끝날 때
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {
+                // 애니메이션이 반복 중일 때
+            }
+        })
     }
 
     fun punchPowerTestComplete(power: Double) {
